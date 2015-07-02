@@ -12,7 +12,7 @@ d3Chart.init = function() {
             top: 30,
             right: 30,
             bottom: 30,
-            left: 30
+            left: 90
         }
 
         this._conf = {};
