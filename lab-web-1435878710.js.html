@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>??Title??</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="http://localhost:8001/css/lib/normalize-2.1.2.css">
+    <style media="screen" type="text/css">
+        /* css here */
+    </style>
+</head>
+
+<body>
+
+    <!-- HTML HERE -->
+    <script src="http://localhost:8001/js/lib/lodash-v2.4.1.js"></script>
+    <script src="http://localhost:8001/js/lib/jquery-1.11.0.js"></script>
+    <script src="http://localhost:8001/js/lib/d3-3.4.13.js"></script>
+    <script src="http://localhost:8001/js/lib/moment-v2.10.3.js"></script>
+    <script src="chart.js"></script>
+    <script>
+
+    function prepareGraphState(props) {
+            // var allData = props.data;
+            // var data = allData.map(function(d) {
+            //     return {
+            //         x: [{
+            //             key: 'date-time',
+            //             value: moment(d.date).toDate(),
+            //             displayName: 'Date'
+            //         }],
+            //         y: [{
+            //             key: 'unfiltered_impressions',
+            //             value: d.unfiltered_impressions,
+            //             displayName: 'Total impression'
+            //         }, {
+            //             key: 'filtered_impressions',
+            //             value: d.filtered_impressions,
+            //             displayName: 'Filter impression'
+            //         }],
+            //         id: _.uniqueId()
+            //     }
+            // });
+            var range = {
+                x: [0, 1000],
+                y: [0, 300]
+            };
+        var dataTest = [
+              { x: [{ key: 'date-time', value: moment('2015-07-4' ).endOf('day').toDate(), displayName: 'Date' }], y: [{ key: 'unfiltered_impressions', value: 800, displayName: 'Total impression' }], id: _.uniqueId() }
+            , { x: [{ key: 'date-time', value: moment('2015-07-3' ).endOf('day').toDate(), displayName: 'Date' }], y: [{ key: 'unfiltered_impressions', value: 0  , displayName: 'Total impression' }], id: _.uniqueId() }
+            , { x: [{ key: 'date-time', value: moment('2015-07-2' ).endOf('day').toDate(), displayName: 'Date' }], y: [{ key: 'unfiltered_impressions', value: 700, displayName: 'Total impression' }], id: _.uniqueId() }
+            , { x: [{ key: 'date-time', value: moment('2015-07-1' ).endOf('day').toDate(), displayName: 'Date' }], y: [{ key: 'unfiltered_impressions', value: 560, displayName: 'Total impression' }], id: _.uniqueId() }
+            , { x: [{ key: 'date-time', value: moment('2015-06-31').endOf('day').toDate(), displayName: 'Date' }], y: [{ key: 'unfiltered_impressions', value: 400, displayName: 'Total impression' }], id: _.uniqueId() }
+            , { x: [{ key: 'date-time', value: moment('2015-06-30').endOf('day').toDate(), displayName: 'Date' }], y: [{ key: 'unfiltered_impressions', value: 300, displayName: 'Total impression' }], id: _.uniqueId() }
+            , { x: [{ key: 'date-time', value: moment('2015-06-29').endOf('day').toDate(), displayName: 'Date' }], y: [{ key: 'unfiltered_impressions', value: 200, displayName: 'Total impression' }], id: _.uniqueId() }
+            , { x: [{ key: 'date-time', value: moment('2015-06-28').endOf('day').toDate(), displayName: 'Date' }], y: [{ key: 'unfiltered_impressions', value: 100, displayName: 'Total impression' }], id: _.uniqueId() }
+        ];
+
+        var state = {};
+        // _.extend(state, { data: data }, { range: range });
+        _.extend(state, { data: dataTest }, { range: range });
+
+        return state;
+    };
+
+    var state = prepareGraphState()
+    d3Chart.create('body', state);
+    d3Chart.update('body', state);
+    </script>
+</body>
+
+</html>
