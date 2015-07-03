@@ -1,7 +1,8 @@
 var d3Chart = {};
 
-d3Chart.init = function() {
+d3Chart.init = function(el, data) {
     window.d = this;
+
     var margin = {
             top: 10,
             right: 10,
@@ -9,25 +10,44 @@ d3Chart.init = function() {
             left: 10
         },
         padding = {
-            top: 30,
-            right: 30,
-            bottom: 30,
-            left: 90
+            top: 20,
+            right: 20,
+            bottom: 20,
+            left: 30
         }
 
-        this._conf = {};
-        this._conf.margin = margin;
-        this._conf.padding = padding;
-        this._conf.w_svg = 1000;
-        this._conf.h_svg = 300;
-        this._conf.w_wrap = this._conf.w_svg - margin.left - margin.right;
-        this._conf.h_wrap = this._conf.h_svg - margin.top - margin.bottom;
-        this._conf.width =  this._conf.w_wrap - padding.left - padding.right;
-        this._conf.height = this._conf.h_wrap - padding.top - padding.bottom;
+            this._conf = {};
+            this._conf.margin = margin;
+            this._conf.padding = padding;
+            this._conf.w_svg = 1000;
+            this._conf.h_svg = 300;
+            this._conf.w_wrap = this._conf.w_svg - margin.left - margin.right;
+            this._conf.h_wrap = this._conf.h_svg - margin.top - margin.bottom;
+            this._conf.width =  this._conf.w_wrap - padding.left - padding.right;
+            this._conf.height = this._conf.h_wrap - padding.top - padding.bottom;
+    this._conf.barWidth2 = this._barWidth2(data);
+
+    console.log('barWidth2: ', this._conf.barWidth2)
 };
 
+
+d3Chart._barWidth2 = function(data) {
+    var dataX = data.map(function(d){ return d.x[0].value; });
+    var dataY = data.map(function(d){ return d.y[0].value; });
+    var maxDataY = d3.max(dataY, function(d){ return d; });
+    var minDataY = d3.min(dataY, function(d){ return d; });
+    var maxDataX = d3.max(dataX, function(d){ return d; });
+    var minDataX = d3.min(dataX, function(d){ return d; });
+
+    this._scales(data).x(maxDataX);
+    var barWidth2 = parseInt((this._scales(data).x(maxDataX)-this._scales(data).x(minDataX))/data.length);
+    return barWidth2;
+}
+
 d3Chart.create = function(el, state) {
-    this.init();
+    var data = state.data;
+    this.init(el, data);
+
     var svgContainer = d3.select(el).append('svg')
         .attr('class', 'd3')
         .attr('style', 'border:1px lightgray solid;')
@@ -62,10 +82,12 @@ d3Chart.update = function(el, state) {
 };
 
 d3Chart._drawPoints = function(el, scales, data, range) {
-
     var that = this;
 
     var barWidth = parseInt(this._conf.width/(data.length));
+    var barWidth2 = this._conf.barWidth2;
+
+    console.log('xxxxxxxxxxxxxxxx: ', barWidth, barWidth2 )
 
     // var viewBoxMaxX = range.x[1] + barWidth;
     var viewBoxMaxX = this._conf.w_svg;
@@ -82,56 +104,70 @@ d3Chart._drawPoints = function(el, scales, data, range) {
     point.enter()
         .append('g').classed('data-point', true)
 
-    point.attr('transform', function(d){
-            var x = scales.x(d.x[0].value);
+    var dataContainer = point.attr('transform', function(d){
+            // var x = scales.x(d.x[0].value)+barWidth/2;
+            var x = scales.x(d.x[0].value) + barWidth2/2;
             var dataY = parseInt(scales.y(d.y[0].value))
             var y = that._conf.height - dataY;//range.y[1]// - dataY;
             // var y = 0;
             // console.log('dataY: ', dataY, 'x: ',x, 'y: ', y )
-            console.log('x: ',x, 'y: ', y )
+            // console.log('x: ',x, 'y: ', y )
             // return "translate("+x+","+y+")"
             return "translate("+x+","+0+")"
         })
-        .append('rect')
-        .attr( 'fill', 'red')
-        .attr( 'stroke', 'gray')
-        .attr( 'width', barWidth  )
+
+    dataContainer.append("circle")
+            .attr("class", "origin")
+            .attr("r", 4.5);
+
+    dataContainer.append('rect')
+        .attr( 'fill', 'none')
+        .attr( 'x', -barWidth2/2)
+        .attr( 'stroke', 'red')
+        .attr( 'width', barWidth2  )
         .attr( 'height', function(d){
             var o = parseInt(scales.y(d.y[0].value));
             return o
         })
-
     point.exit().remove();
 
-    ts=  moment('2015-06-28' ).toDate()
-    td=  moment('2015-07-4' ).toDate()
-    console.log(this._conf.width);
-    var s = d3.time.scale().domain([ts,td]).range([this._conf.margin.left+this._conf.padding.left+barWidth/2, this._conf.width+40])
+    tS= moment('2015-06-28' ).toDate()
+    tE= moment('2015-07-4' ).toDate()
+    // rS= this._conf.margin.left+this._conf.padding.left+barWidth/2;
+    rS= this._conf.margin.left+this._conf.padding.left//;+barWidth/2;
+    // rE= this._conf.width;//+barWidth;//-this._conf.margin.right-this._conf.padding.right;
+    rE= this._conf.width-this._conf.margin.right-this._conf.padding.right;
+    console.log('barWidth: ', barWidth);
+    console.log('_conf.width: ', this._conf.width);
 
+    console.log('rS, rE: ', rS, rE);
+    console.log('tS, tE: ', tS, tE);
 
+    var AxisScale = d3.time.scale().domain([tS,tE]).range([rS,rE])
     var xAxis = d3.svg.axis()
-        .scale(s)
-        .orient("bottom").ticks(data.length).tickSize(21)
+        .scale(AxisScale)
+        .orient("bottom").ticks(data.length).tickSize(10)
         .tickFormat(function(d) { return d3.time.format('%b %d')(new Date(d)) });
 
         //http://stackoverflow.com/questions/19459687/understanding-nvd3-x-axis-date-format
 
+    var axisLocationY = this._conf.height + this._conf.padding.top + this._conf.margin.top;
     d3.select('svg').append('g')// Add the X Axis
         .attr("class", "x axis")
-        .attr("transform", "translate(0,100)")
+        .attr("transform", "translate(0, "+ axisLocationY +")")
         .call(xAxis);
 
 }
 
 
-d3Chart._scales = function(data, range, type) {
-    range = null;
+d3Chart._scales = function(data) {
+
+    // var range;
 
     var barWidth = parseInt(this._conf.width/(data.length));
 
-    type = type || { x:'date', y:'linear' }
     // range = range || { x:[0,1000], y:[0,300] }
-    range = range || { x:[0, this._conf.width-barWidth ], y:[0, this._conf.height] }
+    // range = range || { x:[0, this._conf.width-barWidth ], y:[0, this._conf.height] }
 
     var dataX = data.map(function(d){ return d.x[0].value; });
     var dataY = data.map(function(d){ return d.y[0].value; });
@@ -139,20 +175,21 @@ d3Chart._scales = function(data, range, type) {
     var maxY = d3.max(dataY, function(d){ return d; });
     var startEndX = d3.extent(dataX, function(d){ return d; });//.reverse();
     var startEndY = [0, maxY];
-
     var x,y;
 
-    switch (type.x) {
-        case 'date':
-            x = d3.time.scale().domain(startEndX).range(range.x);
-            break;
-    }
+    var maxDataY = d3.max(dataY, function(d){ return d; });
+    var minDataY = d3.min(dataY, function(d){ return d; });
+    var maxDataX = d3.max(dataX, function(d){ return d; });
+    var minDataX = d3.min(dataX, function(d){ return d; });
 
-    switch (type.y) {
-        case 'linear':
-            y = d3.scale.linear().domain(startEndY).range(range.y);
-            break;
-    }
+    x = d3.time.scale().domain([minDataX, maxDataX]).range([0,1000]);
+    y = d3.scale.linear().domain([0, maxDataY]).range([0,300]);
+
+
+
+    // x = d3.time.scale().domain(startEndX).range(range.x);
+    // y = d3.scale.linear().domain(startEndY).range(range.y);
 
     return {x:x, y:y}
 }
+

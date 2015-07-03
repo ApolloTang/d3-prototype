@@ -12,16 +12,14 @@
     body {
         font: 12px Arial;
     }
-    path {
-        stroke: steelblue;
-        stroke-width: 2;
-        fill: yes;
+    .axis path {
+        stroke: black;
+        fill: none;
     }
-    .axis path,
     .axis line {
         fill: none;
         stroke: black;
-        stroke-width: 2;
+        stroke-width: 1;
         shape-rendering: crispEdges;
     }
 
@@ -65,14 +63,14 @@
                 y: [0, 300]
             };
         var dataTest = [
-              { x: [{ value: moment('2015-07-4' ).endOf('day').toDate() }], y: [{ value: 700, }], id: _.uniqueId() }
-            , { x: [{ value: moment('2015-07-3' ).endOf('day').toDate() }], y: [{ value: 0  , }], id: _.uniqueId() }
-            , { x: [{ value: moment('2015-07-1' ).endOf('day').toDate() }], y: [{ value: 500, }], id: _.uniqueId() }
-            , { x: [{ value: moment('2015-06-30').endOf('day').toDate() }], y: [{ value: 400, }], id: _.uniqueId() }
-            , { x: [{ value: moment('2015-06-29').endOf('day').toDate() }], y: [{ value: 300, }], id: _.uniqueId() }
-            , { x: [{ value: moment('2015-06-28').endOf('day').toDate() }], y: [{ value: 200, }], id: _.uniqueId() }
-            , { x: [{ value: moment('2015-07-2' ).endOf('day').toDate() }], y: [{ value: 600, }], id: _.uniqueId() }
-            // , { x: [{ value: moment('2015-06-27').endOf('day').toDate() }], y: [{ value: 100, }], id: _.uniqueId() }
+              { x: [{ value: moment('2015-07-4' ).endOf('day').toDate() }], y: [{ value: 700 }], id: _.uniqueId() }
+            , { x: [{ value: moment('2015-07-3' ).endOf('day').toDate() }], y: [{ value: 600 }], id: _.uniqueId() }
+            , { x: [{ value: moment('2015-07-2' ).endOf('day').toDate() }], y: [{ value: 500 }], id: _.uniqueId() }
+            , { x: [{ value: moment('2015-07-1' ).endOf('day').toDate() }], y: [{ value: 400 }], id: _.uniqueId() }
+            , { x: [{ value: moment('2015-06-30').endOf('day').toDate() }], y: [{ value: 300 }], id: _.uniqueId() }
+            , { x: [{ value: moment('2015-06-29').endOf('day').toDate() }], y: [{ value: 100 }], id: _.uniqueId() }
+            , { x: [{ value: moment('2015-06-28').endOf('day').toDate() }], y: [{ value: 200 }], id: _.uniqueId() }
+            , { x: [{ value: moment('2015-06-27').endOf('day').toDate() }], y: [{ value: 100 }], id: _.uniqueId() }
         ];
 
         var state = {};
