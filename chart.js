@@ -25,8 +25,8 @@ d3Chart.init = function(el, data) {
             this._conf.h_wrap = this._conf.h_svg - margin.top - margin.bottom;
             this._conf.width =  this._conf.w_wrap - padding.left - padding.right;
             this._conf.height = this._conf.h_wrap - padding.top - padding.bottom;
-    this._conf.barWidth2 = this._barWidth2(data);
 
+    this._conf.barWidth2 = this._barWidth2(data);
     console.log('barWidth2: ', this._conf.barWidth2)
 };
 
@@ -106,7 +106,7 @@ d3Chart._drawPoints = function(el, scales, data, range) {
 
     var dataContainer = point.attr('transform', function(d){
             // var x = scales.x(d.x[0].value)+barWidth/2;
-            var x = scales.x(d.x[0].value) + barWidth2/2;
+            var x = scales.x(d.x[0].value)// + barWidth2/2;
             var dataY = parseInt(scales.y(d.y[0].value))
             var y = that._conf.height - dataY;//range.y[1]// - dataY;
             // var y = 0;
@@ -131,8 +131,8 @@ d3Chart._drawPoints = function(el, scales, data, range) {
         })
     point.exit().remove();
 
-    tS= moment('2015-06-28' ).toDate()
-    tE= moment('2015-07-4' ).toDate()
+    tS= moment('2015-06-27' ).toDate()
+    tE= moment('2015-07-04' ).toDate()
     // rS= this._conf.margin.left+this._conf.padding.left+barWidth/2;
     rS= this._conf.margin.left+this._conf.padding.left//;+barWidth/2;
     // rE= this._conf.width;//+barWidth;//-this._conf.margin.right-this._conf.padding.right;
@@ -182,8 +182,18 @@ d3Chart._scales = function(data) {
     var maxDataX = d3.max(dataX, function(d){ return d; });
     var minDataX = d3.min(dataX, function(d){ return d; });
 
-    x = d3.time.scale().domain([minDataX, maxDataX]).range([0,1000]);
+    console.log('xxxxxxxx', this);
+
+    var pointDistance = this._conf.width/data.length;
+    var startRangeX = 0 + pointDistance/2;
+    var endRangeX   = this._conf.width - pointDistance/2;
+
+
+    x = d3.time.scale().domain([minDataX, maxDataX]).range([startRangeX,endRangeX]);
     y = d3.scale.linear().domain([0, maxDataY]).range([0,300]);
+
+    // x = d3.time.scale().domain([minDataX, maxDataX]).range([0,1000]);
+    // y = d3.scale.linear().domain([0, maxDataY]).range([0,300]);
 
 
 
