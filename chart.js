@@ -27,9 +27,24 @@ d3Chart.init = function(el, data) {
             this._conf.height = this._conf.h_wrap - padding.top - padding.bottom;
 
     this._conf.barWidth2 = this._barWidth2(data);
-    console.log('barWidth2: ', this._conf.barWidth2)
+    // console.log('barWidth2: ', this._conf.barWidth2)
+    this._conf.w_dataResolution = this._w_dataResolution(data);
+    // console.log('w_dataResolution: ', this._conf.w_dataResolution)
 };
 
+d3Chart._w_dataResolution = function(data) {
+
+    var dataX = data.map(function(d){ return d.x[0].value; });
+    var dataY = data.map(function(d){ return d.y[0].value; });
+    var maxDataY = d3.max(dataY, function(d){ return d; });
+    var minDataY = d3.min(dataY, function(d){ return d; });
+
+    var M_maxDataX = moment(d3.max(dataX, function(d){ return d; }));
+    var M_minDataX = moment(d3.min(dataX, function(d){ return d; }));
+    var dayBetweetTwoDates = M_maxDataX.diff(M_minDataX, 'd') + 1;
+    var w_dataResolution =parseInt( this._conf.width/dayBetweetTwoDates);
+    return w_dataResolution;
+};
 
 d3Chart._barWidth2 = function(data) {
     var dataX = data.map(function(d){ return d.x[0].value; });
@@ -43,6 +58,7 @@ d3Chart._barWidth2 = function(data) {
     var barWidth2 = parseInt((this._scales(data).x(maxDataX)-this._scales(data).x(minDataX))/data.length);
     return barWidth2;
 }
+
 
 d3Chart.create = function(el, state) {
     var data = state.data;
@@ -122,9 +138,9 @@ d3Chart._drawPoints = function(el, scales, data, range) {
 
     dataContainer.append('rect')
         .attr( 'fill', 'none')
-        .attr( 'x', -barWidth2/2)
+        .attr( 'x', -1*parseInt(this._conf.w_dataResolution/2) )
         .attr( 'stroke', 'red')
-        .attr( 'width', barWidth2  )
+        .attr( 'width', this._conf.w_dataResolution  )
         .attr( 'height', function(d){
             var o = parseInt(scales.y(d.y[0].value));
             return o
@@ -143,8 +159,8 @@ d3Chart._drawPoints = function(el, scales, data, range) {
     // rS= this._conf.margin.left+this._conf.padding.left+barWidth/2;
     // rE= this._conf.width;//+barWidth;//-this._conf.margin.right-this._conf.padding.right;
 
-    rS= 0 + barWidth/2;// //this._conf.margin.left+this._conf.padding.left//;+barWidth/2;
-    rE= this._conf.width - barWidth/2;
+    rS= 0 + this._conf.w_dataResolution/2;// //this._conf.margin.left+this._conf.padding.left//;+barWidth/2;
+    rE= this._conf.width - this._conf.w_dataResolution/2;
     console.log('barWidth: ', barWidth);
     console.log('_conf.width: ', this._conf.width);
 
@@ -191,7 +207,7 @@ d3Chart._scales = function(data) {
     var maxDataX = d3.max(dataX, function(d){ return d; });
     var minDataX = d3.min(dataX, function(d){ return d; });
 
-    var pointDistance = parseInt(this._conf.width/data.length);
+    var pointDistance = this._conf.w_dataResolution;
     var startRangeX = 0 + pointDistance/2;
     var endRangeX   = this._conf.width - pointDistance/2;
 
