@@ -34,8 +34,16 @@ d3Chart.init = function(el, data) {
 d3Chart.refreshCached = function(data) {
     var dataX = data.map(function(d){ return d.x[0].value; });
     var dataY = data.map(function(d){ return d.y[0].value; });
+
     var maxDataY = d3.max(dataY, function(d){ return d; });
     var minDataY = d3.min(dataY, function(d){ return d; });
+    var maxDataX = d3.max(dataX, function(d){ return d; });
+    var minDataX = d3.min(dataX, function(d){ return d; });
+
+    this._cache.maxDataY = maxDataY;
+    this._cache.minDataY = minDataY;
+    this._cache.maxDataX = maxDataX;
+    this._cache.minDataX = minDataX;
 
     var M_maxDataX = moment(d3.max(dataX, function(d){ return d; }));
     var M_minDataX = moment(d3.min(dataX, function(d){ return d; }));
@@ -47,11 +55,8 @@ d3Chart.refreshCached = function(data) {
 };
 
 d3Chart._daysBetweenTwoDates = function(day){
-    var dataX = data.map(function(d){ return d.x[0].value; });
-    var dataY = data.map(function(d){ return d.y[0].value; });
-    var maxDataY = d3.max(dataY, function(d){ return d; });
-    var minDataY = d3.min(dataY, function(d){ return d; });
-
+    var maxDataY = this._cache.maxDataY;
+    var minDataY = this._cache.minDataY;
     var M_maxDataX = moment(d3.max(dataX, function(d){ return d; }));
     var M_minDataX = moment(d3.min(dataX, function(d){ return d; }));
     var daysBetweetTwoDates = M_maxDataX.diff(M_minDataX, 'days');
@@ -93,6 +98,7 @@ d3Chart.update = function(el, state) {
     this.refreshCached(data);
     var scales = this._scales(data);
     this._drawPoints(el, scales, data, range);
+    this._drawXAxis();
 };
 
 d3Chart._drawPoints = function(el, scales, data, range) {
@@ -138,19 +144,19 @@ d3Chart._drawPoints = function(el, scales, data, range) {
         })
     point.exit().remove();
 
-    // X axis
-    var dataX = data.map(function(d){ return d.x[0].value; });
-    var dataY = data.map(function(d){ return d.y[0].value; });
-    var maxDataY = d3.max(dataY, function(d){ return d; });
-    var minDataY = d3.min(dataY, function(d){ return d; });
-    var maxDataX = d3.max(dataX, function(d){ return d; });
-    var minDataX = d3.min(dataX, function(d){ return d; });
+}
+
+d3Chart._drawXAxis = function(){
+    var maxDataY = this._cache.maxDataY;
+    var minDataY = this._cache.minDataY;
+    var maxDataX = this._cache.maxDataX;
+    var minDataX = this._cache.minDataX;
 
     tS= minDataX;
     tE= maxDataX;
 
-    rS= 0 + this._cache.w_dataResolution/2;
-    rE= this._conf.width - this._cache.w_dataResolution/2;
+    rS= 0 + parseInt(this._cache.w_dataResolution/2);
+    rE= this._conf.width - parseInt(this._cache.w_dataResolution/2);
 
     var AxisScale = d3.time.scale().domain([tS,tE]).range([rS,rE])
     var xAxis = d3.svg.axis()
@@ -165,23 +171,29 @@ d3Chart._drawPoints = function(el, scales, data, range) {
         .attr("class", "x axis")
         .attr("transform", "translate(0, "+ axisLocationY +")")
         .call(xAxis);
-}
+};
 
 d3Chart._scales = function(data) {
     var dataX = data.map(function(d){ return d.x[0].value; });
     var dataY = data.map(function(d){ return d.y[0].value; });
 
-    var maxDataY = d3.max(dataY, function(d){ return d; });
-    var minDataY = d3.min(dataY, function(d){ return d; });
-    var maxDataX = d3.max(dataX, function(d){ return d; });
-    var minDataX = d3.min(dataX, function(d){ return d; });
+    var maxDataY = this._cache.maxDataY;
+    var minDataY = this._cache.minDataY;
+    var maxDataX = this._cache.maxDataX;
+    var minDataX = this._cache.minDataX;
 
     var pointDistance = this._cache.w_dataResolution;
+
     var startRangeX = 0 + pointDistance/2;
     var endRangeX   = this._conf.width - pointDistance/2;
 
-    x = d3.time.scale().domain([minDataX, maxDataX]).range([startRangeX,endRangeX]);
-    y = d3.scale.linear().domain([0, maxDataY]).range([0,300]);
+    x = d3.time.scale()
+        .domain([minDataX, maxDataX])
+        .range([startRangeX, endRangeX]);
+
+    y = d3.scale.linear()
+        .domain([ 0, maxDataY])
+        .range([ 0, 300]);
 
     return {x:x, y:y}
 }
