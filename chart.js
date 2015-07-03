@@ -43,7 +43,7 @@ d3Chart.refreshCached = function(data) {
     var w_dataResolution =parseInt( this._conf.width/dayBetweetTwoDates);
 
     this._cache.w_dataResolution = w_dataResolution;
-    this._cache.numberOfPointsOnXAxis = dayBetweetTwoDates;
+    this._cache.dataResolutionOnXAxis = dayBetweetTwoDates;
 };
 
 d3Chart._daysBetweenTwoDates = function(day){
@@ -90,6 +90,7 @@ d3Chart.create = function(el, state) {
 d3Chart.update = function(el, state) {
     var range = state.range;
     var data = state.data;
+    this.refreshCached(data);
     var scales = this._scales(data);
     this._drawPoints(el, scales, data, range);
 };
@@ -154,7 +155,7 @@ d3Chart._drawPoints = function(el, scales, data, range) {
     var AxisScale = d3.time.scale().domain([tS,tE]).range([rS,rE])
     var xAxis = d3.svg.axis()
         .scale(AxisScale)
-        .orient("bottom").ticks(this._cache.numberOfPointsOnXAxis)
+        .orient("bottom").ticks(this._cache.dataResolutionOnXAxis)
         .tickSize(10)
         .tickFormat(function(d) { return d3.time.format('%b %d')(new Date(d)) });
         //http://stackoverflow.com/questions/19459687/understanding-nvd3-x-axis-date-format
