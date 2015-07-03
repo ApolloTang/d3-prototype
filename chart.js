@@ -28,11 +28,13 @@ d3Chart.init = function() {
 
 d3Chart.create = function(el, state) {
     this.init();
-    var wrap = d3.select(el).append('svg')
+    var svgContainer = d3.select(el).append('svg')
         .attr('class', 'd3')
         .attr('style', 'border:1px lightgray solid;')
         .attr('width', '100%').attr('height', '100%')
         // .attr('width', this._conf.w_svg).attr('height', this._conf.h_svg)
+
+    var wrap = svgContainer
         .append('g').classed('wrap', true)
         .attr("transform", "translate(" + this._conf.margin.left + "," + this._conf.margin.top + ")")
 
@@ -100,6 +102,25 @@ d3Chart._drawPoints = function(el, scales, data, range) {
         })
 
     point.exit().remove();
+
+    ts=  moment('2015-06-28' ).toDate()
+    td=  moment('2015-07-4' ).toDate()
+    console.log(this._conf.width);
+    var s = d3.time.scale().domain([ts,td]).range([this._conf.margin.left+this._conf.padding.left+barWidth/2, this._conf.width+40])
+
+
+    var xAxis = d3.svg.axis()
+        .scale(s)
+        .orient("bottom").ticks(data.length).tickSize(21)
+        .tickFormat(function(d) { return d3.time.format('%b %d')(new Date(d)) });
+
+        //http://stackoverflow.com/questions/19459687/understanding-nvd3-x-axis-date-format
+
+    d3.select('svg').append('g')// Add the X Axis
+        .attr("class", "x axis")
+        .attr("transform", "translate(0,100)")
+        .call(xAxis);
+
 }
 
 
