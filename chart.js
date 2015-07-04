@@ -82,11 +82,11 @@ d3Chart.create = function(el, state) {
             .attr("height", this._conf.h_wrap)
             .attr("fill", '#eeeeee')
 
-        var plotArea = wrap.append('g').classed('data-points', true)
+        var plotArea = wrap.append('g').classed('plot-area', true)
             .attr("transform", "translate(" + this._conf.padding.left + "," + this._conf.padding.top + ")");
 
         plotArea.append("rect")
-            .attr("class", "plotArea-background")
+            .attr("class", "plot-area-background")
             .attr("width", this._conf.width)
             .attr("height", this._conf.height)
             .attr("fill", '#aaeeee')
@@ -110,7 +110,8 @@ d3Chart._drawPoints = function(el, scales, data, range) {
     var svgContainer = d3.select(el).select('svg')
         .attr('viewBox', '0 0 ' + viewBoxMaxX + ' ' + viewBoxMaxY)
 
-    var points = d3.select(el).select('.data-points');
+    var points = d3.select(el).select('.plot-area')
+        .append('g').classed('data-points', true);
 
     var point = points.selectAll('g').classed('data-point', true)
         .data(data, function(d) {return d.id})
@@ -164,7 +165,7 @@ d3Chart._drawXAxis = function(){
         //http://stackoverflow.com/questions/19459687/understanding-nvd3-x-axis-date-format
 
     var axisLocationY = this._conf.height;
-    d3.select('.data-points').append('g')// Add the X Axis
+    d3.select('.plot-area').append('g')// Add the X Axis
         .attr("class", "x axis")
         .attr("transform", "translate(0, "+ axisLocationY +")")
         .call(xAxis);
