@@ -117,7 +117,9 @@ d3Chart._drawPoints = function(el, scales, data) {
     var svgContainer = d3.select(el).select('svg')
         .attr('viewBox', '0 0 ' + viewBoxMaxX + ' ' + viewBoxMaxY)
 
-    var points = d3.select(el).select('.plot-area')
+    var plotArea = d3.select(el).select('.plot-area');
+
+    var points = plotArea//d3.select(el).select('.plot-area')
         .append('g').classed('data-points', true);
 
     var point = points.selectAll('g').classed('data-point', true)
@@ -148,6 +150,22 @@ d3Chart._drawPoints = function(el, scales, data) {
             return o
         })
     point.exit().remove();
+
+    // draw line
+    var valueline = d3.svg.line()
+        .x(function(d) {
+            var dataX = parseInt(scales.x(d.x[0].value));
+            return dataX;
+        })
+        .y(function(d) {
+            var dataY = that._conf.height - parseInt(scales.y(d.y[0].value))
+            return dataY
+        });
+
+        plotArea.append("path")
+            .attr("d", valueline(data))
+            .attr('fill', 'none')
+            .attr('stroke', 'blue');
 
 }
 
