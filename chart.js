@@ -47,11 +47,16 @@ d3Chart.refreshCached = function(data) {
 
     var M_maxDataX = moment(d3.max(dataX, function(d){ return d; }));
     var M_minDataX = moment(d3.min(dataX, function(d){ return d; }));
-    var dayBetweetTwoDates = M_maxDataX.diff(M_minDataX, 'days') + 1; // include end point
-    var w_dataResolution =parseInt( this._conf.width/dayBetweetTwoDates);
+    var howManyDaysBetweenTwoDates = M_maxDataX.diff(M_minDataX, 'days') + 1; // include end point
+
+    var w_dataResolution =parseInt( this._conf.width/howManyDaysBetweenTwoDates);
+    var h_dataResolution =parseInt( this._conf.height/maxDataX );
 
     this._cache.w_dataResolution = w_dataResolution;
-    this._cache.dataResolutionOnXAxis = dayBetweetTwoDates;
+    this._cache.h_dataResolution = h_dataResolution;
+
+    this._cache.dataResolutionOnXAxis = howManyDaysBetweenTwoDates;
+    this._cache.dataResolutionOnYAxis = 10;
 };
 
 d3Chart._daysBetweenTwoDates = function(day){
@@ -100,6 +105,7 @@ d3Chart.update = function(el, state) {
     var scales = this._scales(data);
     this._drawPoints(el, scales, data);
     this._drawXAxis();
+    this._drawYAxis();
 };
 
 d3Chart._drawPoints = function(el, scales, data) {
@@ -151,13 +157,13 @@ d3Chart._drawXAxis = function(){
     var maxDataX = this._cache.maxDataX;
     var minDataX = this._cache.minDataX;
 
-    tS= minDataX;
-    tE= maxDataX;
+    dS= minDataX;
+    dE= maxDataX;
 
     rS= 0 + parseInt(this._cache.w_dataResolution/2);
     rE= this._conf.width - parseInt(this._cache.w_dataResolution/2);
 
-    var AxisScale = d3.time.scale().domain([tS,tE]).range([rS,rE])
+    var AxisScale = d3.time.scale().domain([dS,dE]).range([rS,rE])
     var xAxis = d3.svg.axis()
         .scale(AxisScale)
         .orient("bottom").ticks(this._cache.dataResolutionOnXAxis)
@@ -165,10 +171,37 @@ d3Chart._drawXAxis = function(){
         .tickFormat(function(d) { return d3.time.format('%b %d')(new Date(d)) });
         //http://stackoverflow.com/questions/19459687/understanding-nvd3-x-axis-date-format
 
+    var axisLocationX = 0;
     var axisLocationY = this._conf.height;
-    d3.select('.plot-area').append('g')// Add the X Axis
+    d3.select('.plot-area').append('g')
         .attr("class", "x axis")
-        .attr("transform", "translate(0, "+ axisLocationY +")")
+        .attr("transform", "translate("+axisLocationX+", "+axisLocationY+")")
+        .call(xAxis);
+};
+
+d3Chart._drawYAxis = function(){
+    var maxDataY = this._cache.maxDataY;
+    var minDataY = this._cache.minDataY;
+    var maxDataX = this._cache.maxDataX;
+    var minDataX = this._cache.minDataX;
+
+    dS= maxDataY;
+    dE= 0;
+
+    rS= 0;
+    rE= this._conf.height;
+
+    var AxisScale = d3.scale.linear().domain([dS,dE]).range([rS,rE])
+    var xAxis = d3.svg.axis()
+        .scale(AxisScale)
+        .orient("left").ticks(this._cache.dataResolutionOnYAxis)
+        .tickSize(10)
+
+    var axisLocationY = 0;
+    var axisLocationX = 0;
+    d3.select('.plot-area').append('g')
+        .attr("class", "y axis")
+        .attr("transform", "translate("+axisLocationX+", "+axisLocationY+")")
         .call(xAxis);
 };
 
