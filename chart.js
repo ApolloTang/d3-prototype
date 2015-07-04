@@ -93,15 +93,16 @@ d3Chart.create = function(el, state) {
 };
 
 d3Chart.update = function(el, state) {
-    var range = state.range;
     var data = state.data;
+
     this.refreshCached(data);
+
     var scales = this._scales(data);
-    this._drawPoints(el, scales, data, range);
+    this._drawPoints(el, scales, data);
     this._drawXAxis();
 };
 
-d3Chart._drawPoints = function(el, scales, data, range) {
+d3Chart._drawPoints = function(el, scales, data) {
     var that = this;
 
     var viewBoxMaxX = this._conf.w_svg;

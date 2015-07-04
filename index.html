@@ -58,10 +58,7 @@
             //         id: _.uniqueId()
             //     }
             // });
-            var range = {
-                x: [0, 1000],
-                y: [0, 300]
-            };
+
         var dataTest = [
               { x: [{ value: moment('2015-07-04' ).toDate() }], y: [{ value: 700 }], id: _.uniqueId() }
             // , { x: [{ value: moment('2015-07-03' ).toDate() }], y: [{ value: 600 }], id: _.uniqueId() }
@@ -75,8 +72,7 @@
         ];
 
         var state = {};
-        // _.extend(state, { data: data }, { range: range });
-        _.extend(state, { data: dataTest }, { range: range });
+        _.extend(state, { data: dataTest });
 
         return state;
     };
