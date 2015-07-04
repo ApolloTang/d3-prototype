@@ -13,7 +13,7 @@ d3Chart.init = function(el, data) {
         padding = {
             top: 20,
             right: 20,
-            bottom: 20,
+            bottom: 50,
             left: 50
         }
 
@@ -119,14 +119,11 @@ d3Chart._drawPoints = function(el, scales, data, range) {
         .append('g').classed('data-point', true)
 
     var dataContainer = point.attr('transform', function(d){
-            var x = scales.x(d.x[0].value);
+            var dataX = parseInt(scales.x(d.x[0].value));
             var dataY = parseInt(scales.y(d.y[0].value))
-            var y = that._conf.height - dataY;//range.y[1]// - dataY;
-            // var y = 0;
-            // console.log('dataY: ', dataY, 'x: ',x, 'y: ', y )
-            // console.log('x: ',x, 'y: ', y )
-            // return "translate("+x+","+y+")"
-            return "translate("+x+","+0+")"
+            var x = dataX;
+            var y = that._conf.height - dataY;
+            return "translate("+x+","+y+")"
         })
 
     dataContainer.append("circle")
@@ -186,6 +183,7 @@ d3Chart._scales = function(data) {
 
     var startRangeX = 0 + pointDistance/2;
     var endRangeX   = this._conf.width - pointDistance/2;
+    var endRangeY   = this._conf.height;
 
     x = d3.time.scale()
         .domain([minDataX, maxDataX])
@@ -193,7 +191,7 @@ d3Chart._scales = function(data) {
 
     y = d3.scale.linear()
         .domain([ 0, maxDataY])
-        .range([ 0, 300]);
+        .range([ 0, endRangeY]);
 
     return {x:x, y:y}
 }
